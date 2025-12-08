@@ -137,25 +137,37 @@ class TitanicMethod(object):
         - nominal 척도이므로 one-hot encoding 또는 LabelEncoding 사용
         """
         df = df.copy()
+
+        a = []
+        for i in [df]:
+            # a.append(i['Title'].unique())
+            a += list(set(i['Title'])) # train, test 두번을 누적해야 해서서
+        a = list(set(a)) # train, test 각각은 중복이 아니지만, 합치면서 중복발생
+        print("🐞🐞🐞")
+        print(a)
+        # ['Mr', 'Miss', 'Dr', 'Major', 'Sir', 'Ms', 'Master', 'Capt', 'Mme', 'Mrs', 
+        #  'Lady', 'Col', 'Rev', 'Countess', 'Don', 'Mlle', 'Dona', 'Jonkheer']
+        '''
+        ['Mr', 'Sir', 'Major', 'Don', 'Rev', 'Countess', 'Lady', 'Jonkheer', 'Dr',
+        'Miss', 'Col', 'Ms', 'Dona', 'Mlle', 'Mme', 'Mrs', 'Master', 'Capt']
+        Royal : ['Countess', 'Lady', 'Sir']
+        Rare : ['Capt','Col','Don','Dr','Major','Rev','Jonkheer','Dona','Mme' ]
+        Mr : ['Mlle']
+        Ms : ['Miss']
+        Master
+        Mrs
+        '''
+        title_mapping = {'Mr': 1, 'Ms': 2, 'Mrs': 3, 'Master': 4, 'Royal': 5, 'Rare': 6}
         
-        # Name 컬럼에서 Title 추출 (정규표현식 사용)
-        # 예: "Braund, Mr. Owen Harris" -> "Mr"
-        df["Title"] = df["Name"].str.extract(r',\s*([^\.]+)\.', expand=False)
-        
-        # 희소한 타이틀을 "Rare" 그룹으로 묶기
-        # 일반적인 타이틀: Mr, Mrs, Miss, Master
-        common_titles = ["Mr", "Mrs", "Miss", "Master"]
-        df["Title"] = df["Title"].apply(
-            lambda x: x if x in common_titles else "Rare"
-        )
-        
-        # 결측치 처리 (혹시 모를 경우를 대비)
-        if df["Title"].isnull().any():
-            df["Title"].fillna("Mr", inplace=True)  # 가장 많은 타이틀로 채우기
-        
-        # One-hot encoding
-        title_dummies = pd.get_dummies(df["Title"], prefix="Title")
-        df = pd.concat([df, title_dummies], axis=1)
+        for i in [df]:
+            i['Title'] = i['Title'].replace(['Countess', 'Lady', 'Sir'], 'Royal')
+            i['Title'] = i['Title'].replace(['Capt','Col','Don','Dr','Major','Rev','Jonkheer','Dona','Mme'], 'Rare')
+            i['Title'] = i['Title'].replace(['Mlle'], 'Mr')
+            i['Title'] = i['Title'].replace(['Miss'], 'Ms')
+            # Master 는 변화없음
+            # Mrs 는 변화없음
+            i['Title'] = i['Title'].fillna(0)
+            i['Title'] = i['Title'].map(title_mapping)
         
         # 원본 Title 컬럼은 유지 (필요시 drop_feature로 제거 가능)
         return df
