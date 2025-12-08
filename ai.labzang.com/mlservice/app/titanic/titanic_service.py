@@ -36,11 +36,11 @@ class TitanicService:
         ic(f'1. Train 의 type \n {type(this_train)} ')
         ic(f'2. Train 의 column \n {this_train.columns} ')
         ic(f'3. Train 의 상위 1개 행\n {this_train.head()} ')
-        ic(f'4. Train 의 null 의 갯수\n {this_train.isnull().sum()}개')
+        ic(f'4. Train 의 null 의 갯수\n {the_method.check_null(this_train)}개')
         ic(f'5. Test 의 type \n {type(this_test)}')
         ic(f'6. Test 의 column \n {this_test.columns}')
         ic(f'7. Test 의 상위 1개 행\n {this_test.head()}개')
-        ic(f'8. Test 의 null 의 갯수\n {this_test.isnull().sum()}개')
+        ic(f'8. Test 의 null 의 갯수\n {the_method.check_null(this_test)}개')
         ic("😎😎 전처리 완료")
 
     def modeling(self):
