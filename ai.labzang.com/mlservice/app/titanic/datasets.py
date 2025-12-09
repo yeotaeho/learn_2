@@ -7,13 +7,13 @@ import pandas as pd
 class DataSets:
     """데이터셋 관리를 위한 클래스"""
     
-    def __init__(self):
+    def __init__(self, train: Optional[pd.DataFrame] = None, test: Optional[pd.DataFrame] = None):
         """초기화"""
         self._fname: str = ''  # file name
         self._dname: str = ''  # data path
         self._sname: str = ''  # save path
-        self._train: Optional[pd.DataFrame] = None
-        self._test: Optional[pd.DataFrame] = None
+        self._train: Optional[pd.DataFrame] = train
+        self._test: Optional[pd.DataFrame] = test
         self._id: str = ''
         self._label: str = ''
     
