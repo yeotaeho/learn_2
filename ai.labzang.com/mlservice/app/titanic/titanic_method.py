@@ -35,12 +35,12 @@ class TitanicMethod(object):
             print("🐞🐞🐞")
             ic(i.isnull().sum())
     
-    def extract_title_from_name(self, train_df: DataFrame, test_df: DataFrame):
+    def extract_title_from_name(self, this):
         # for i in [train_df, test_df]:
         #     i['Title'] = i['Name'].str.extract('([A-Za-z]+)\.', expand=False) 
 
         [i.__setitem__('Title', i['Name'].str.extract('([A-Za-z]+)\.', expand=False)) 
-         for i in [train_df, test_df]]
+         for i in [this.train, this.test]]
             # expand=False 는 시리즈 로 추출
         return (train_df, test_df)
     
