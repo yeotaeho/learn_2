@@ -176,7 +176,7 @@ class SeoulService:
         rest_cols = [c for c in crime.columns if c not in ordered_cols]
         crime_sorted = crime[ordered_cols + rest_cols]
         out_file = save_path / "crime.csv"
-        crime_sorted.to_csv(out_file, index=False)
+        crime_sorted.to_csv(out_file, index=False, encoding='utf-8-sig')
         logger.info(f"👽👽👽👽crime 데이터프레임을 {out_file} 에 저장했습니다.👽👽👽👽")
 
 
@@ -191,7 +191,7 @@ class SeoulService:
             "cctv_pop_rows": len(cctv_pop),
             "cctv_pop_columns": cctv_pop.columns.tolist(),
             "cctv_preview": cctv.head(3).to_dict(orient='records'),
-            "crime_preview": crime.head(3).to_dict(orient='records'),
+            "crime_preview": crime.head(20).to_dict(orient='records'),
             "pop_preview": pop.head(3).to_dict(orient='records'),
             "cctv_pop_preview": cctv_pop.head(3).to_dict(orient='records'),
             "message": "데이터 전처리 및 머지가 완료되었습니다"
