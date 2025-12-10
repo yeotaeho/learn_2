@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from app.seoul_crime.seoul_method import SeoulMethod
 from app.seoul_crime.seoul_data import SeoulData
-from app.seoul_crime.google_map_singleton import GoogleMapSingleton
+from app.seoul_crime.kakao_map_singleton import KakaoMapSingleton
 
 try:
     from common.utils import setup_logging
@@ -95,19 +95,19 @@ class SeoulService:
         station_lngs = []
         
         # 싱글턴 패턴 테스트
-        gmaps1 = GoogleMapSingleton()
-        gmaps2 = GoogleMapSingleton()
-        if gmaps1 is gmaps2:
-            logger.info("GoogleMapSingleton: 동일한 객체입니다 (싱글턴 패턴 정상 작동)")
+        kakao1 = KakaoMapSingleton()
+        kakao2 = KakaoMapSingleton()
+        if kakao1 is kakao2:
+            logger.info("KakaoMapSingleton: 동일한 객체입니다 (싱글턴 패턴 정상 작동)")
         else:
-            logger.warning("GoogleMapSingleton: 다른 객체입니다 (싱글턴 패턴 오류)")
+            logger.warning("KakaoMapSingleton: 다른 객체입니다 (싱글턴 패턴 오류)")
         
-        gmaps = GoogleMapSingleton() # 구글맵 객체 생성
+        kakao = KakaoMapSingleton() # 카카오맵 객체 생성
         logger.info(f"총 {len(station_names)}개 경찰서 주소 검색 중...")
         
         for idx, name in enumerate(station_names, 1):
             try:
-                tmp = gmaps.geocode(name, language='ko')
+                tmp = kakao.geocode(name, language='ko')
                 if tmp and len(tmp) > 0:
                     formatted_addr = tmp[0].get("formatted_address", "")
                     logger.info(f"[{idx}/{len(station_names)}] {name}의 검색 결과: {formatted_addr}")
@@ -159,8 +159,26 @@ class SeoulService:
             # 길이가 다르더라도 가능한 만큼만 추가
             crime['자치구'] = gu_names[:len(crime)] if len(gu_names) > len(crime) else gu_names + [''] * (len(crime) - len(gu_names))
 
-        logger.info("구글맵 실행 완료")
-        # crime 편집 
+        logger.info("카카오맵 실행 완료")
+
+        # crime 를 save 폴더에 csv 파일로 저장 (컬럼 순서 정렬)
+        save_path = Path(self.data.sname)
+        save_path.mkdir(parents=True, exist_ok=True)
+        desired_cols = [
+            '관서명', '살인 발생', '살인 검거',
+            '강도 발생', '강도 검거',
+            '강간 발생', '강간 검거',
+            '절도 발생', '절도 검거',
+            '폭력 발생', '폭력 검거',
+            '자치구',
+        ]
+        ordered_cols = [c for c in desired_cols if c in crime.columns]
+        rest_cols = [c for c in crime.columns if c not in ordered_cols]
+        crime_sorted = crime[ordered_cols + rest_cols]
+        out_file = save_path / "crime.csv"
+        crime_sorted.to_csv(out_file, index=False)
+        logger.info(f"crime 데이터프레임을 {out_file} 에 저장했습니다.")
+
 
 
 
