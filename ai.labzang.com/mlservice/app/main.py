@@ -13,6 +13,26 @@ try:
 except ImportError:
     seoul_router = None
 
+try:
+    from app.us_unemployment.router import router as usa_router
+except ImportError:
+    usa_router = None
+
+try:
+    from app.kr_.router import router as kr_router
+except ImportError:
+    kr_router = None
+
+try:
+    from app.heatmap.router import router as heatmap_router
+except ImportError:
+    heatmap_router = None
+
+try:
+    from app.nlp.nlp_router import router as nlp_router
+except ImportError:
+    nlp_router = None
+
 # 공통 모듈 경로 추가 (최우선)
 current_file = Path(__file__).resolve()
 base_dir = current_file.parent.parent  # /app (Docker) 또는 mlservice (로컬)
@@ -93,11 +113,43 @@ app = FastAPI(
             "name": "titanic",
             "description": "타이타닉 승객 데이터 관련 API",
         },
+        {
+            "name": "usa",
+            "description": "미국 실업률 데이터 및 지도 시각화 API",
+        },
+        {
+            "name": "kr",
+            "description": "서울 범죄지도 데이터 및 시각화 API",
+        },
+        {
+            "name": "heatmap",
+            "description": "서울 범죄비율 히트맵 시각화 API",
+        },
+        {
+            "name": "nlp",
+            "description": "NLTK 자연어 처리 API",
+        },
     ],
     openapi_tags=[
         {
             "name": "titanic",
             "description": "타이타닉 승객 데이터 및 머신러닝 예측 기능",
+        },
+        {
+            "name": "usa",
+            "description": "미국 실업률 데이터 및 Folium 지도 시각화 기능",
+        },
+        {
+            "name": "kr",
+            "description": "서울 범죄지도 데이터 및 Folium 지도 시각화 기능",
+        },
+        {
+            "name": "heatmap",
+            "description": "서울 범죄비율 히트맵 시각화 기능",
+        },
+        {
+            "name": "nlp",
+            "description": "NLTK 자연어 처리 기능 (토큰화, 형태소 분석, POS 태깅, 워드클라우드 등)",
         },
     ],
 )
@@ -118,6 +170,14 @@ if LoggingMiddleware is not None:
 app.include_router(titanic_router, prefix="/titanic")
 if seoul_router is not None:
     app.include_router(seoul_router, prefix="/seoul")
+if usa_router is not None:
+    app.include_router(usa_router, prefix="/usa")
+if kr_router is not None:
+    app.include_router(kr_router, prefix="/kr")
+if heatmap_router is not None:
+    app.include_router(heatmap_router, prefix="/kr")
+if nlp_router is not None:
+    app.include_router(nlp_router)
 
 @app.get("/")
 async def root():

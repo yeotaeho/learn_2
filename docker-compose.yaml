@@ -167,6 +167,7 @@ services:
       - labzang-network
     volumes:
       - ./ai.labzang.com/mlservice/app/seoul_crime/save:/app/app/seoul_crime/save
+      - ./ai.labzang.com/mlservice/app/nlp/save:/app/app/nlp/save
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - DB_HOST=${DB_HOST}
