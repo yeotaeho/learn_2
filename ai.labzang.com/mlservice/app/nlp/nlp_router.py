@@ -117,16 +117,22 @@ async def get_emma_raw(
                 stopwords = ["Mr.", "Mrs.", "Miss", "Mr", "Mrs", "Dear"]
                 fd_names = service.extract_names_from_corpus("gutenberg", "austen-emma.txt", stopwords)
                 
+                # 타임스탬프를 포함한 고유한 파일명 생성 (매번 새 파일로 저장)
+                from datetime import datetime
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"emma_wordcloud_{timestamp}"
+                
                 # 워드클라우드 생성 및 저장
                 filepath, wc = service.generate_wordcloud(
                     fd_names,
                     show=False,
-                    filename="emma_wordcloud"
+                    filename=filename
                 )
                 
                 result_data["wordcloud"] = {
                     "filepath": filepath,
                     "filename": Path(filepath).name,
+                    "timestamp": timestamp,
                     "most_common": service.get_most_common(fd_names, 10)
                 }
             except Exception as wc_error:
